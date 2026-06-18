@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "MyMedCheck",
+    "slug": "mymedcheck",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "mymedcheck",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0E7C7B"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mymedcheck.app"
+    },
+    "android": {
+      "package": "com.mymedcheck.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
