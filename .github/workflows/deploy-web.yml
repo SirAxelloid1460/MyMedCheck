@@ -5,8 +5,11 @@ name: Desplegar web en GitHub Pages
 # Source: "GitHub Actions".
 
 on:
+  # Se despliega al integrar en main o manualmente (workflow_dispatch).
+  # Nota: requiere activar una vez GitHub Pages en Settings > Pages
+  # (Source: "GitHub Actions"); el token del workflow no puede crearlo solo.
   push:
-    branches: [main, claude/self-diagnosis-app-7picx0]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
