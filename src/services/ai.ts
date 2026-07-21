@@ -79,18 +79,24 @@ export async function analyzeWithAI(apiKey: string, input: AiInput): Promise<AiA
     `Síntomas seleccionados:\n${symptomList}` +
     (input.notes?.trim() ? `\n\nNotas de la persona:\n${input.notes.trim()}` : '');
 
-  let response;
+  // El cuerpo usa campos recientes de la API (thinking adaptativo y
+  // output_config) que el tipado del SDK no siempre cubre; lo pasamos como
+  // `any` y tipamos la respuesta como Message (respuesta no-streaming).
+  const requestBody = {
+    model: MODEL,
+    max_tokens: 4096,
+    thinking: { type: 'adaptive' },
+    system: SYSTEM_PROMPT,
+    output_config: {
+      format: { type: 'json_schema', schema: ASSESSMENT_SCHEMA },
+    },
+    messages: [{ role: 'user', content: userContent }],
+  };
+
+  let response: Anthropic.Message;
   try {
-    response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 4096,
-      thinking: { type: 'adaptive' },
-      system: SYSTEM_PROMPT,
-      output_config: {
-        format: { type: 'json_schema', schema: ASSESSMENT_SCHEMA },
-      },
-      messages: [{ role: 'user', content: userContent }],
-    } as Anthropic.MessageCreateParams);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    response = (await client.messages.create(requestBody as any)) as Anthropic.Message;
   } catch (err) {
     if (err instanceof Anthropic.AuthenticationError) {
       throw new Error('La clave de API no es válida. Revísala en Ajustes.');

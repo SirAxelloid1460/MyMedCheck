@@ -1,0 +1,51 @@
+name: Desplegar web en GitHub Pages
+
+# Compila la app como sitio estático y la publica en GitHub Pages.
+# Para activarlo una sola vez: Settings > Pages > Build and deployment >
+# Source: "GitHub Actions".
+
+on:
+  push:
+    branches: [main, claude/self-diagnosis-app-7picx0]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Exportar web (sitio estático)
+        run: npx expo export -p web
+        env:
+          # Sirve bajo /<nombre-del-repo>/ en github.io
+          EXPO_BASE_URL: /${{ github.event.repository.name }}
+      - name: Evitar el procesado Jekyll (carpetas _expo)
+        run: touch dist/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
