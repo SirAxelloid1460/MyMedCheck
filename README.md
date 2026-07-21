@@ -59,16 +59,59 @@ pensamiento adaptativo (`thinking: { type: 'adaptive' }`) y *structured outputs*
 > backend propio para no exponer la clave en el dispositivo. En este prototipo la
 > clave se guarda localmente (AsyncStorage) y se usa directamente.
 
-## Puesta en marcha
+## Puesta en marcha (desarrollo)
 
 ```bash
 npm install
 npm start        # abre Expo (escanea el QR con la app Expo Go)
 npm run android  # emulador/dispositivo Android
 npm run ios      # simulador iOS (macOS)
+npm run web      # abre la app en el navegador
 ```
 
 Para el análisis con IA: abre **Ajustes** en la app y pega tu clave de API de Claude.
+
+## 🖥️ Versión web para PC
+
+La app se exporta como un **sitio estático** (HTML/JS) que se puede abrir en
+cualquier navegador y hospedar en cualquier sitio.
+
+```bash
+npm run build:web   # genera la carpeta dist/ (sitio estático)
+npm run serve:web   # sírvela en http://localhost:3000
+```
+
+La salida en `dist/` incluye una página por ruta (`index.html`, `symptoms.html`,
+`results.html`, `settings.html`).
+
+**Para ponerla online**, sube el contenido de `dist/` a cualquier hosting estático:
+
+- **Netlify / Vercel:** arrastra la carpeta `dist/` o conecta el repo (carpeta de
+  publicación: `dist`, comando de build: `npm run build:web`).
+- **GitHub Pages:** publica `dist/` en la rama `gh-pages`.
+- **EAS Hosting:** `npx eas-cli deploy` (requiere cuenta de Expo).
+
+## 📱 Generar el APK para Android
+
+El binario se compila con **EAS Build** (servicio en la nube de Expo). Necesitas
+una cuenta gratuita de Expo.
+
+```bash
+npm i -g eas-cli        # instala la CLI (una vez)
+eas login               # inicia sesión con tu cuenta de Expo
+eas build:configure     # vincula el proyecto (una vez)
+npm run build:apk       # eas build -p android --profile preview
+```
+
+Al terminar, EAS te da un enlace para **descargar el `.apk`** e instalarlo en el
+móvil (activa "instalar apps de orígenes desconocidos"). Los perfiles de build
+están en `eas.json`:
+
+- `preview` → **APK** instalable directamente (para pruebas/compartir).
+- `production` → **AAB** (App Bundle) para publicar en Google Play.
+
+> El APK debe compilarse desde tu máquina o CI con tu cuenta de Expo; no se puede
+> generar sin ese login. Toda la configuración necesaria ya está en el repo.
 
 ## Calidad
 
